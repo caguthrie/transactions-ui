@@ -1,0 +1,17 @@
+.transaction-table {
+    max-width: calc(100vw - 30px);
+}
+
+.transaction-table .data-row, .transaction-table .header {
+    padding: 8px;
+}
+
+.transaction-table .empty {
+    width: 100px;
+}
+
+.link {
+    text-decoration: none;
+    cursor: pointer;
+    color: #4183c4;
+}

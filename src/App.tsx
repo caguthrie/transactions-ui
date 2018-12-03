@@ -1,28 +1,34 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, {Component} from 'react';
+import {BrowserRouter as Router, Route, Switch, Redirect} from "react-router-dom";
+import {Login} from "./components/Login";
+import "./App.css";
+import {Transactions} from "./components/Transactions";
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.tsx</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
-  }
+interface State {
+    hasAuth: boolean;
+}
+
+class App extends Component<{}, State> {
+    state = {
+        hasAuth: !!localStorage.getItem("auth")
+    };
+
+    render() {
+        const {hasAuth} = this.state;
+        return (
+            <Router>
+                <div className={"main-container"}>
+                    <Switch>
+                        <Route path={"/login"} render={() => <Login onReceiveAuth={this.onReceiveAuth}/>}/>
+                        <Route path={"/transactions"} render={() => hasAuth ? <Transactions /> : <Redirect to={"/login"}/>}/>
+                        <Redirect to={hasAuth ? "/transactions" : "/login"}/>
+                    </Switch>
+                </div>
+            </Router>
+        );
+    }
+
+    onReceiveAuth = () => this.setState({hasAuth: true});
 }
 
 export default App;
