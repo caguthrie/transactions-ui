@@ -94,9 +94,9 @@ export class Transactions extends React.Component<{}, State> {
         if (currentlyDeletingTransaction === transaction) {
             return (
                 <div>
-                    Are you sure?
-                    <div className="link" onClick={() => this.deleteTransaction(transaction)}>Yes</div> /
-                    <div className="link" onClick={() => this.setState({currentlyDeletingTransaction: null})}> No</div>
+                    <span>Are you sure?  </span>
+                    <span className="link" onClick={() => this.deleteTransaction(transaction)}>Yes</span> /
+                    <span className="link" onClick={() => this.setState({currentlyDeletingTransaction: null})}> No</span>
                 </div>
             );
         } else {
