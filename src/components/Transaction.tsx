@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {Transaction as TransactionModel} from "../models/Transaction";
-import {Button, Form, InputOnChangeData, Loader} from "semantic-ui-react";
+import {Button, Form, InputOnChangeData, Loader, Message} from "semantic-ui-react";
 import {Input} from "semantic-ui-react";
 import {api} from "../services/Api";
 import {RouteComponentProps, withRouter} from "react-router";
@@ -12,6 +12,7 @@ interface State {
     transactionToEdit?: TransactionModel;
     description: string;
     price: number | undefined;
+    errorMessage: string | undefined;
 }
 
 export const Transaction = withRouter(
@@ -20,7 +21,8 @@ export const Transaction = withRouter(
             super(props);
             this.state = {
                 description: '',
-                price: undefined
+                price: undefined,
+                errorMessage: undefined
             };
         }
 
@@ -33,10 +35,20 @@ export const Transaction = withRouter(
 
         render() {
             const {match} = this.props;
-            const {price, description, transactionToEdit} = this.state;
+            const {price, description, transactionToEdit, errorMessage} = this.state;
 
             if (match.params.id && !transactionToEdit) {
-                return <Loader active={true} size={"large"}/>;
+                if (errorMessage) {
+                    return (
+                        <Message
+                            error={true}
+                            header={"An error occurred"}
+                            content={errorMessage}
+                        />
+                    );
+                } else {
+                    return <Loader active={true} size={"large"}/>;
+                }
             } else {
                 return (
                     <Form>
@@ -63,13 +75,14 @@ export const Transaction = withRouter(
                     transactionToEdit: data
                 }))
                 .catch(err => {
-                    // TODO error handling
+                    this.setState({errorMessage: "Unable to find this item!"});
                 });
         }
 
         private onClick = () => {
             const {history} = this.props;
             const {transactionToEdit, description, price} = this.state;
+            this.setState({errorMessage: undefined});
 
             if (transactionToEdit) {
                 api.put("/transaction/update", {
@@ -77,15 +90,15 @@ export const Transaction = withRouter(
                     description,
                     price
                 })
-                    .then(resp => history.push("/transactions"))
-                    .catch(err => {
-                        // TODO
+                    .then(() => history.push("/transactions"))
+                    .catch(() => {
+                        this.setState({errorMessage: "Unable to update this item!"});
                     });
             } else {
                 api.post("/transaction/create", {description, price})
-                    .then(resp => history.push("/transactions"))
-                    .catch(err => {
-                        // TODO
+                    .then(() => history.push("/transactions"))
+                    .catch(() => {
+                        this.setState({errorMessage: "Unable to create this item! Please try again"});
                     });
             }
         };

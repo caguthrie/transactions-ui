@@ -8,8 +8,8 @@ import {Link} from "react-router-dom";
 interface State {
     transactions: Transaction[];
     loading: boolean;
-    currentlyDeletingTransaction: Transaction | null;
-    errorMessage: string | null;
+    currentlyDeletingTransaction: Transaction | undefined;
+    errorMessage: string | undefined;
 }
 
 export class Transactions extends React.Component<{}, State> {
@@ -20,8 +20,8 @@ export class Transactions extends React.Component<{}, State> {
         this.state = {
             transactions: [],
             loading: true,
-            currentlyDeletingTransaction: null,
-            errorMessage: null
+            currentlyDeletingTransaction: undefined,
+            errorMessage: undefined
         };
     }
 
@@ -41,7 +41,7 @@ export class Transactions extends React.Component<{}, State> {
                     </div>
                 </Link>
                 {
-                    errorMessage === null ? null :
+                    errorMessage === undefined ? null :
                         <Message
                             error={true}
                             header={"An error occurred"}
@@ -110,7 +110,7 @@ export class Transactions extends React.Component<{}, State> {
                 <div>
                     <span>Are you sure?  </span>
                     <span className="link" onClick={() => this.deleteTransaction(transaction)}>Yes</span> /
-                    <span className="link" onClick={() => this.setState({currentlyDeletingTransaction: null})}> No</span>
+                    <span className="link" onClick={() => this.setState({currentlyDeletingTransaction: undefined})}> No</span>
                 </div>
             );
         } else {
@@ -119,6 +119,7 @@ export class Transactions extends React.Component<{}, State> {
     };
 
     private deleteTransaction(transaction: Transaction) {
+        this.setState({errorMessage: undefined});
         api.delete(`/transaction/${transaction.id}`)
             .then(resp => this.fetchTransactions())
             .catch(() => {
