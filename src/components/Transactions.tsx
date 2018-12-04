@@ -1,6 +1,6 @@
 import * as React from "react";
 import {Transaction} from "../models/Transaction";
-import {Loader} from "semantic-ui-react";
+import {Form, Loader, Message} from "semantic-ui-react";
 import {api} from "../services/Api";
 import "./Transactions.css";
 import {Link} from "react-router-dom";
@@ -9,6 +9,7 @@ interface State {
     transactions: Transaction[];
     loading: boolean;
     currentlyDeletingTransaction: Transaction | null;
+    errorMessage: string | null;
 }
 
 export class Transactions extends React.Component<{}, State> {
@@ -19,7 +20,8 @@ export class Transactions extends React.Component<{}, State> {
         this.state = {
             transactions: [],
             loading: true,
-            currentlyDeletingTransaction: null
+            currentlyDeletingTransaction: null,
+            errorMessage: null
         };
     }
 
@@ -28,12 +30,24 @@ export class Transactions extends React.Component<{}, State> {
     }
 
     render() {
-        const {loading} = this.state;
+        const {loading, errorMessage} = this.state;
         return (
             <div>
-                <h3>Your non-automatic transactions</h3>
-                {loading ? <Loader size={"large"} active={true}/> : this.renderTransactions()}
-                {}
+                <h3>Your Transactions</h3>
+                {loading && !errorMessage ? <Loader size={"large"} active={true}/> : this.renderTransactions()}
+                <Link to={"/transaction"}>
+                    <div className={"link create-new"}>
+                        Create New Transaction
+                    </div>
+                </Link>
+                {
+                    errorMessage === null ? null :
+                        <Message
+                            error={true}
+                            header={"An error occurred"}
+                            content={errorMessage}
+                        />
+                }
             </div>
         );
     }
@@ -46,8 +60,8 @@ export class Transactions extends React.Component<{}, State> {
                     loading: false
                 })
             })
-            .catch(err => {
-                // TODO
+            .catch(() => {
+                this.setState({errorMessage: "An error occurred while trying to find your items. Try again later."});
             });
     }
 
@@ -107,8 +121,8 @@ export class Transactions extends React.Component<{}, State> {
     private deleteTransaction(transaction: Transaction) {
         api.delete(`/transaction/${transaction.id}`)
             .then(resp => this.fetchTransactions())
-            .catch(err => {
-                // TODO
+            .catch(() => {
+                this.setState({errorMessage: "An error occurred while trying to delete your item. Try again later."});
             });
     }
 }
