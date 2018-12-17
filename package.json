@@ -1,6 +1,7 @@
 {
   "name": "transactions-ui",
   "version": "0.1.0",
+  "homepage": "https://storage.googleapis.com/ta2-transactions-ui/build/",
   "private": true,
   "dependencies": {
     "@types/axios": "^0.14.0",
