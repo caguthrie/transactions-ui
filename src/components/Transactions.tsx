@@ -10,6 +10,10 @@ interface State {
     loading: boolean;
     currentlyDeletingTransaction: Transaction | undefined;
     errorMessage: string | undefined;
+
+    balance: number | undefined;
+    loadingBalance: boolean;
+    balanceError: boolean;
 }
 
 export class Transactions extends React.Component<{}, State> {
@@ -21,20 +25,26 @@ export class Transactions extends React.Component<{}, State> {
             transactions: [],
             loading: true,
             currentlyDeletingTransaction: undefined,
-            errorMessage: undefined
+            errorMessage: undefined,
+            balanceError: false,
+            loadingBalance: true,
+            balance: undefined
         };
     }
 
     componentDidMount() {
         this.fetchTransactions();
+        this.fetchBalance();
     }
 
     render() {
-        const {loading, errorMessage} = this.state;
+        const {loading, errorMessage, loadingBalance, balanceError} = this.state;
         return (
             <div>
+                <h3>Your Current Balance</h3>
+                {loadingBalance && !balanceError ? <Loader size={"mini"} active={true} inline={true}/> : this.renderBalance()}
                 <h3>Your Transactions</h3>
-                {loading && !errorMessage ? <Loader size={"large"} active={true}/> : this.renderTransactions()}
+                {loading && !errorMessage ? <Loader size={"small"} active={true} inline={true}/> : this.renderTransactions()}
                 <Link to={"/transaction"}>
                     <div className={"link create-new"}>
                         Create New Transaction
@@ -52,6 +62,19 @@ export class Transactions extends React.Component<{}, State> {
         );
     }
 
+    private fetchBalance() {
+        api.get<{balance: number}>(`/user/balance`)
+            .then(resp => {
+                this.setState({
+                    balance: resp.data.balance,
+                    loadingBalance: false
+                })
+            })
+            .catch(() => {
+                this.setState({balanceError: true});
+            });
+    }
+
     private fetchTransactions() {
         api.get<Transaction[]>(`/transaction/all`)
             .then(resp => {
@@ -63,6 +86,16 @@ export class Transactions extends React.Component<{}, State> {
             .catch(() => {
                 this.setState({errorMessage: "An error occurred while trying to find your items. Try again later."});
             });
+    }
+
+    private renderBalance() {
+        const {balanceError, balance} = this.state;
+
+        if (balanceError) {
+            return <div>Unable to get balance at this time</div>;
+        } else {
+            return <div>{`$${balance}`}</div>;
+        }
     }
 
     private renderTransactions() {
