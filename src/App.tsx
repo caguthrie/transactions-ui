@@ -24,8 +24,8 @@ class App extends Component<{}, State> {
                     {hasAuth ? <a onClick={this.logOut} className={"logout"}>Log out</a> : null}
                     <Switch>
                         <Route path={"/forgot-password"} render={() => <ForgotPassword/>}/>
-                        <Route path={"/change-password"} render={props => <ChangePassword {...props}/>}/>
-                        <Route path={"/login"} render={() => <Login onReceiveAuth={this.onReceiveAuth}/>}/>
+                        <Route path={"/change-password"} render={props => <ChangePassword {...props} onReceiveAuth={this.onReceiveAuth}/>}/>
+                        <Route path={"/login"} render={() => hasAuth ? <Redirect to={"/transactions"}/> : <Login onReceiveAuth={this.onReceiveAuth}/>}/>
                         <Route path={"/transactions"} render={() => hasAuth ? <Transactions /> : <Redirect to={"/login"}/>}/>
                         <Route path={"/transaction/:id"} render={props => hasAuth ? <Transaction {...props} /> : <Redirect to={"/login"}/>}/>
                         <Route path={"/transaction"} render={props => hasAuth ? <Transaction {...props} /> : <Redirect to={"/login"}/>}/>

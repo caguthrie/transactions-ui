@@ -4,7 +4,9 @@ import {api} from "../services/Api";
 import {RouteComponentProps} from "react-router";
 import {AxiosError} from "axios";
 
-type Props = RouteComponentProps<any>;
+interface Props extends RouteComponentProps<any>{
+    onReceiveAuth: () => void;
+}
 
 interface State {
     loading: boolean;
@@ -30,22 +32,6 @@ export class ChangePassword extends React.Component<Props, State> {
             email: getURLParam("email"),
             changePasswordToken: getURLParam("token")
         };
-    }
-
-    componentDidUpdate() {
-        const {history} = this.props;
-        const {success, email, password} = this.state;
-        if (success) {
-            api.post<{token: string}>(`/user/login`, {email, password})
-                .then(resp => {
-                    localStorage.setItem("auth", resp.data.token);
-                    history.push("/transactions");
-                })
-                .catch((err: AxiosError) => {
-                    console.log(err);
-                    this.setState({errorMessage: "Password changed, but unable to log in. Please visit the main page and try to log in."})
-                });
-        }
     }
 
     render() {
@@ -88,6 +74,7 @@ export class ChangePassword extends React.Component<Props, State> {
     };
 
     private onSubmit = () => {
+        const {history, onReceiveAuth} = this.props;
         const {password, passwordConfirmation, email, changePasswordToken, loading} = this.state;
         if (!loading) {
             this.setState({errorMessage: undefined});
@@ -100,7 +87,18 @@ export class ChangePassword extends React.Component<Props, State> {
                     email,
                     password
                 })
-                    .then(resp => this.setState({success: true, loading: false}))
+                    .then(resp => {
+                        api.post<{token: string}>(`/user/login`, {email, password})
+                            .then(resp => {
+                                localStorage.setItem("auth", resp.data.token);
+                                onReceiveAuth();
+                                history.push("/transactions");
+                            })
+                            .catch((err: AxiosError) => {
+                                console.log(err);
+                                this.setState({errorMessage: "Password changed, but unable to log in. Please visit the main page and try to log in."})
+                            });
+                    })
                     .catch(err => this.setState({errorMessage: "Unable to change password. Try again later.", loading: false}))
             }
         }
