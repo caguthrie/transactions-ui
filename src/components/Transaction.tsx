@@ -53,7 +53,8 @@ export const Transaction = withRouter(
                 }
             } else {
                 return (
-                    <Form>
+                    <Form error={!!errorMessage}>
+                        <a onClick={this.goBack} style={{cursor: "pointer"}}>Go Back</a>
                         <h3>{transactionToEdit ? "Edit" : "Create"} a transaction:</h3>
                         <Form.Field>
                             <label>Description:</label>
@@ -61,13 +62,23 @@ export const Transaction = withRouter(
                         </Form.Field>
                         <Form.Field>
                             <label>Price:</label>
-                            <Input style={{maxWidth: "300px"}} type={"number"} onChange={this.onChangePrice} value={price}/>
+                            <Input style={{maxWidth: "300px"}} type={"number"} onChange={this.onChangePrice} value={price || ''}/>
                         </Form.Field>
                         <Button loading={loading} type={"submit"} onClick={this.onClick}>Submit</Button>
+                        {
+                            errorMessage ?
+                                <Message
+                                    error={!!errorMessage}
+                                    header={"An error occurred"}
+                                    content={errorMessage}
+                                /> : null
+                        }
                     </Form>
                 );
             }
         }
+
+        private goBack = () => this.props.history.goBack();
 
         private fetchTransaction(id: string) {
             api.get<TransactionModel>(`/transaction/${id}`)

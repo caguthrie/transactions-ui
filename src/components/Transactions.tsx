@@ -10,7 +10,7 @@ interface State {
     loading: boolean;
     currentlyDeletingTransaction: Transaction | undefined;
     errorMessage: string | undefined;
-
+    deletingItem: boolean;
     balance: number | undefined;
     loadingBalance: boolean;
     balanceError: boolean;
@@ -22,6 +22,7 @@ export class Transactions extends React.Component<{}, State> {
         super(props);
 
         this.state = {
+            deletingItem: false,
             transactions: [],
             loading: true,
             currentlyDeletingTransaction: undefined,
@@ -137,26 +138,41 @@ export class Transactions extends React.Component<{}, State> {
     };
 
     private renderDeleteCell = (transaction: Transaction) => {
-        const {currentlyDeletingTransaction} = this.state;
+        const {currentlyDeletingTransaction, deletingItem} = this.state;
 
         if (currentlyDeletingTransaction === transaction) {
-            return (
-                <div>
-                    <span>Are you sure?  </span>
-                    <span className="link" onClick={() => this.deleteTransaction(transaction)}>Yes</span> /
-                    <span className="link" onClick={() => this.setState({currentlyDeletingTransaction: undefined})}> No</span>
-                </div>
-            );
+            if (deletingItem) {
+                return <div><Loader inline={true} active={true} size={"mini"}/></div>
+            } else {
+                return (
+                    <div>
+                        <span>Are you sure?  </span>
+                        <span className="link" onClick={() => this.deleteTransaction(transaction)}>Yes</span> /
+                        <span className="link" onClick={() => this.setState({currentlyDeletingTransaction: undefined})}> No</span>
+                    </div>
+                );
+            }
         } else {
             return <div className="link" onClick={() => this.setState({currentlyDeletingTransaction: transaction})}>Delete</div>;
         }
     };
 
     private deleteTransaction(transaction: Transaction) {
-        this.setState({errorMessage: undefined});
+        const {transactions} = this.state;
+        this.setState({errorMessage: undefined, deletingItem: true});
         api.delete(`/transaction/${transaction.id}`)
-            .then(resp => this.fetchTransactions())
+            .then(resp => {
+                // Remove transaction from front-end, don't call back-end for current transactions to make it look smoother
+                const idx = transactions.indexOf(transaction);
+                const newTransactions = [
+                    ...transactions.slice(0, idx),
+                    ...transactions.slice(idx + 1)
+                ];
+                this.setState({deletingItem: false, transactions: newTransactions});
+                this.fetchTransactions()
+            })
             .catch(() => {
+                this.setState({deletingItem: false});
                 this.setState({errorMessage: "An error occurred while trying to delete your item. Try again later."});
             });
     }
