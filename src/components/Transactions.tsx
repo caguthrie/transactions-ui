@@ -1,6 +1,6 @@
 import * as React from "react";
 import {Transaction} from "../models/Transaction";
-import {Form, Loader, Message} from "semantic-ui-react";
+import {Loader, Message} from "semantic-ui-react";
 import {api} from "../services/Api";
 import "./Transactions.css";
 import {Link} from "react-router-dom";
@@ -93,8 +93,10 @@ export class Transactions extends React.Component<{}, State> {
 
         if (balanceError) {
             return <div>Unable to get balance at this time</div>;
+        } else if (balance === undefined) {
+            return null;
         } else {
-            return <div>{`$${balance}`}</div>;
+            return <div>{`$${balance.toFixed(2)}`}</div>;
         }
     }
 
@@ -107,11 +109,10 @@ export class Transactions extends React.Component<{}, State> {
             return (
                 <table className={"transaction-table"}>
                     <thead>
-                        <th className={'header description'}>Description</th>
-                        <th className={'header price'}>Price</th>
-                        <th className={'header empty'}/>
-                        <th className={'header edit'}/>
-                        <th className={'header delete'}/>
+                        <tr className={'header'}>
+                            <th>Description</th>
+                            <th>Price</th>
+                        </tr>
                     </thead>
                     <tbody>
                         {transactions.map((transaction: Transaction) => {
@@ -119,7 +120,7 @@ export class Transactions extends React.Component<{}, State> {
                                 <tr className="transaction-item" key={transaction.id}>
                                     <td className={'data-row description'}>{transaction.description}</td>
                                     <td className={'data-row price'}>${transaction.price.toFixed(2)}</td>
-                                    <th className={'data-row empty'}/>
+                                    <td className={'data-row empty'}/>
                                     <td className={'data-row edit'}>{this.renderEditCell(transaction)}</td>
                                     <td className={'data-row delete'}>{this.renderDeleteCell(transaction)}</td>
                                 </tr>

@@ -2,6 +2,12 @@
     padding: 15px;
 }
 
+.logout {
+    margin-bottom: 20px;
+    display: block;
+    cursor: pointer;
+}
+
 @keyframes App-logo-spin {
     from {
         transform: rotate(0deg);

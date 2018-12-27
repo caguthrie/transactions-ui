@@ -9,6 +9,7 @@ interface Props extends RouteComponentProps<{id: string}>{
 }
 
 interface State {
+    loading: boolean;
     transactionToEdit?: TransactionModel;
     description: string;
     price: number | undefined;
@@ -20,6 +21,7 @@ export const Transaction = withRouter(
         constructor(props: Props) {
             super(props);
             this.state = {
+                loading: false,
                 description: '',
                 price: undefined,
                 errorMessage: undefined
@@ -35,7 +37,7 @@ export const Transaction = withRouter(
 
         render() {
             const {match} = this.props;
-            const {price, description, transactionToEdit, errorMessage} = this.state;
+            const {price, description, transactionToEdit, errorMessage, loading} = this.state;
 
             if (match.params.id && !transactionToEdit) {
                 if (errorMessage) {
@@ -47,7 +49,7 @@ export const Transaction = withRouter(
                         />
                     );
                 } else {
-                    return <Loader active={true} size={"large"}/>;
+                    return <Loader inline={true} active={true} size={"large"}/>;
                 }
             } else {
                 return (
@@ -61,7 +63,7 @@ export const Transaction = withRouter(
                             <label>Price:</label>
                             <Input style={{maxWidth: "300px"}} type={"number"} onChange={this.onChangePrice} value={price}/>
                         </Form.Field>
-                        <Button type={"submit"} onClick={this.onClick}>Submit</Button>
+                        <Button loading={loading} type={"submit"} onClick={this.onClick}>Submit</Button>
                     </Form>
                 );
             }
@@ -81,25 +83,28 @@ export const Transaction = withRouter(
 
         private onClick = () => {
             const {history} = this.props;
-            const {transactionToEdit, description, price} = this.state;
-            this.setState({errorMessage: undefined});
+            const {transactionToEdit, description, price, loading} = this.state;
 
-            if (transactionToEdit) {
-                api.put("/transaction/update", {
-                    ...transactionToEdit,
-                    description,
-                    price
-                })
-                    .then(() => history.push("/transactions"))
-                    .catch(() => {
-                        this.setState({errorMessage: "Unable to update this item!"});
-                    });
-            } else {
-                api.post("/transaction/create", {description, price})
-                    .then(() => history.push("/transactions"))
-                    .catch(() => {
-                        this.setState({errorMessage: "Unable to create this item! Please try again"});
-                    });
+            if (!loading) {
+                this.setState({errorMessage: undefined, loading: true});
+
+                if (transactionToEdit) {
+                    api.put("/transaction/update", {
+                        ...transactionToEdit,
+                        description,
+                        price
+                    })
+                        .then(() => history.push("/transactions"))
+                        .catch(() => {
+                            this.setState({errorMessage: "Unable to update this item!", loading: false});
+                        });
+                } else {
+                    api.post("/transaction/create", {description, price})
+                        .then(() => history.push("/transactions"))
+                        .catch(() => {
+                            this.setState({errorMessage: "Unable to create this item! Please try again", loading: false});
+                        });
+                }
             }
         };
 
