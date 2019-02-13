@@ -44,11 +44,11 @@ export class ChangePassword extends React.Component<Props, State> {
                     <Form error={!!(success || errorMessage)}>
                         <Form.Field>
                             <label>New Password:</label>
-                            <Input type={"password"} style={{maxWidth: "300px"}} value={password} onChange={this.onChangePassword}/>
+                            <Input type={"password"} className={"input-box"} value={password} onChange={this.onChangePassword}/>
                         </Form.Field>
                         <Form.Field>
                             <label>Confirm new Password:</label>
-                            <Input type={"password"} style={{maxWidth: "300px"}} value={passwordConfirmation} onChange={this.onChangePasswordConfirmation}/>
+                            <Input type={"password"} className={"input-box"} value={passwordConfirmation} onChange={this.onChangePasswordConfirmation}/>
                         </Form.Field>
                         <Button loading={loading} type={"submit"} onClick={this.onSubmit}>Submit</Button>
                         {

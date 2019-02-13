@@ -32,11 +32,11 @@ export const Login = withRouter(
                     <h3>Please Login:</h3>
                     <Form.Field>
                         <label>Email:</label>
-                        <Input style={{maxWidth: "300px"}} onChange={this.onChangeEmail} value={email} />
+                        <Input className={"input-box"} onChange={this.onChangeEmail} value={email} />
                     </Form.Field>
                     <Form.Field>
                         <label>Password:</label>
-                        <Input style={{maxWidth: "300px"}} type={"password"} onChange={this.onChangePassword} value={password}/>
+                        <Input className={"input-box"} type={"password"} onChange={this.onChangePassword} value={password}/>
                     </Form.Field>
                     <Button loading={loading} type={"submit"} onClick={this.onClick}>Submit</Button>
                     <div style={{marginTop: "20px"}}><Link to={"/forgot-password"}>Forgot password?</Link></div>

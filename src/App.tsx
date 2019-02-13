@@ -9,6 +9,7 @@ import {ChangePassword} from "./components/ChangePassword";
 import {api} from "./services/Api";
 import {AxiosError} from "axios";
 import {Loader} from "semantic-ui-react";
+import {NewUser} from "./components/NewUser";
 
 interface State {
     authLoading: boolean;
@@ -43,6 +44,7 @@ class App extends Component<{}, State> {
                     <div className={"main-container"}>
                         {hasAuth ? <a onClick={this.logOut} className={"logout"}>Log out</a> : null}
                         <Switch>
+                            <Route path={"/new-user"} render={props => <NewUser {...props} onReceiveAuth={this.onReceiveAuth}/>}/>
                             <Route path={"/forgot-password"} render={() => <ForgotPassword/>}/>
                             <Route path={"/change-password"} render={props => <ChangePassword {...props} onReceiveAuth={this.onReceiveAuth}/>}/>
                             <Route path={"/login"} render={() => hasAuth ? <Redirect to={"/transactions"}/> : <Login onReceiveAuth={this.onReceiveAuth}/>}/>

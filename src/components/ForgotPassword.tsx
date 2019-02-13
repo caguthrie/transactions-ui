@@ -2,6 +2,7 @@ import * as React from 'react';
 import {Button, Form, Input, InputOnChangeData, Message} from "semantic-ui-react";
 import {api} from "../services/Api";
 import {AxiosError} from "axios";
+import {validateEmail} from "../utils/emailUtils";
 
 interface State {
     loading: boolean;
@@ -26,7 +27,7 @@ export class ForgotPassword extends React.Component<{}, State> {
                 <Form error={!!(emailSent || errorMessage)}>
                     <Form.Field>
                         <label>Please enter your email to reset your password:</label>
-                        <Input style={{maxWidth: "300px"}} value={email} onChange={this.onChangeEmail}/>
+                        <Input className={"input-box"} value={email} onChange={this.onChangeEmail}/>
                     </Form.Field>
                     <Button loading={loading} type={"submit"} onClick={this.onSubmit}>Submit</Button>
                     {
@@ -69,10 +70,4 @@ export class ForgotPassword extends React.Component<{}, State> {
                 });
         }
     };
-}
-
-// Email address regex validator https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
-function validateEmail(email: string) {
-    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
 }

@@ -58,11 +58,11 @@ export const Transaction = withRouter(
                         <h3>{transactionToEdit ? "Edit" : "Create"} a transaction:</h3>
                         <Form.Field>
                             <label>Description:</label>
-                            <Input style={{maxWidth: "300px"}} onChange={this.onChangeDescription} value={description} />
+                            <Input className={"input-box"} onChange={this.onChangeDescription} value={description} />
                         </Form.Field>
                         <Form.Field>
                             <label>Price:</label>
-                            <Input style={{maxWidth: "300px"}} type={"number"} onChange={this.onChangePrice} value={price || ''}/>
+                            <Input className={"input-box"} type={"number"} onChange={this.onChangePrice} value={price || ''}/>
                         </Form.Field>
                         <Button loading={loading} type={"submit"} onClick={this.onClick}>Submit</Button>
                         {
