@@ -117,6 +117,7 @@ export const NewUser = withRouter(
             } else if (userCreationPassword.length === 0) {
                 this.setState({errorMessage: "Please enter the special password that was given to you to sign up."})
             } else {
+                this.setState({loading: true});
                 // Passes front-end validations
                 api.post<{token: string}>("/user/create", {
                     name,
@@ -134,23 +135,23 @@ export const NewUser = withRouter(
                     if (error.response) {
                         switch (error.response.status) {
                             case 403:
-                                this.setState({errorMessage: "Incorrect special signup password."});
+                                this.setState({errorMessage: "Incorrect special signup password.", loading: false});
                                 return;
                             case 409:
-                                this.setState({errorMessage: `A user with the email address ${email} already exists. Please sign in normally or use 'forgot password' if you forgot your password.`});
+                                this.setState({errorMessage: `A user with the email address ${email} already exists. Please sign in normally or use 'forgot password' if you forgot your password.`, loading: false});
                                 return;
                             case 415:
-                                this.setState({errorMessage: `Tried to log into gmail account ${email} and using the gmail password you provided but it failed. Please check that and try again.`});
+                                this.setState({errorMessage: `Tried to log into gmail account ${email} and using the gmail password you provided but it failed. Please check that and try again.`, loading: false});
                                 return;
                             case 422:
-                                this.setState({errorMessage: "Please verify you have filled out all the fields."});
+                                this.setState({errorMessage: "Please verify you have filled out all the fields.", loading: false});
                                 return;
                             case 500:
-                                this.setState({errorMessage: "A server error occurred. Please try again later."});
+                                this.setState({errorMessage: "A server error occurred. Please try again later.", loading: false});
                                 return;
                         }
                     } else {
-                        this.setState({errorMessage: "A server error occurred. Please contact developer."});
+                        this.setState({errorMessage: "A server error occurred. Please contact developer.", loading: false});
                     }
                 });
             }

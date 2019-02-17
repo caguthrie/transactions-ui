@@ -40,6 +40,7 @@ export const Login = withRouter(
                     </Form.Field>
                     <Button loading={loading} type={"submit"} onClick={this.onClick}>Submit</Button>
                     <div style={{marginTop: "20px"}}><Link to={"/forgot-password"}>Forgot password?</Link></div>
+                    <div style={{marginTop: "20px"}}><Link to={"/new-user"}>Create Account</Link></div>
                     {
                         errorStatusCode === null ? null :
                             <Message
@@ -112,5 +113,4 @@ export const Login = withRouter(
             this.setState({password: data.value});
         };
     }
-
 );
